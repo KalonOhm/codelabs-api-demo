@@ -4,13 +4,11 @@ module BaseApi
   module Users
     def self.new_user(params)
 
-      user = User.new(
+      user.assign_attributes(
         first_name: params[:first_name],
         last_name: params[:last_name],
         email: params[:email],
-        phone: params[:phone],
-        password: params[:password],
-        password_confirmation: params[:password_confirmation]
+        phone: params[:phone]
       )
       begin
         user.save!
@@ -27,6 +25,27 @@ module BaseApi
       return ServiceContract.error('Error deleting user') unless user.destroy
 
       ServiceContract.success(payload: user)
+    end
+
+    def self.update_user(user_id, user_params)
+      user = User.find(user_id)
+
+        # update user's attributes
+        user.assign_attributes(
+          first_name: user_params[:first_name],
+          last_name: user_params[:last_name],
+          email: user_params[:email],
+          phone: user_params[:phone]
+          password: user_params[:password]
+        )
+
+      begin
+        user.save! 
+      rescue ActiveRecord::RecordInvalid => exception 
+        return ServiceContract.error('Error saving user.') unless user.valid?
+      end
+
+      ServiceContract.success(user)
     end
   end
 end

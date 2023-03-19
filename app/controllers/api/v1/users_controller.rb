@@ -39,11 +39,26 @@ module Api
         render_success(payload: UserBlueprint.render_as_hash(@current_user), status: 200)
       end
 
+      def update
+        result = BaseApi::Users.update_user(params[:id], user_params)
+        render_error(errors: 'There was a problem updating your information', status: 400) and return unless result.success?
+        payload = {
+          user: UserBlueprint.render_as_hash(result.payload, view: :normal)
+        }
+        #  TODO: Invite user to accept invitation via registered email
+        render_success(payload: payload, status: 200)
+      end
+
       def validate_invitation
         user = User.invite_token_is(params[:invitation_token]).invite_not_expired.first
 
         render_error(errors: { validated: false, status: 401 }) and return if user.nil?
         render_success(payload: { validated: true, status: 200 })
+      end
+
+      private
+      def user_params 
+        params.require(:user).permit(:first_name, :last_name, :email, :phone)
       end
     end
   end

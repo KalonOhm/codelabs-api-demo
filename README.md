@@ -97,8 +97,8 @@
         auth_password: 'password'
 
     workers:
-        max_threads: #
-        min_threads: #
+        max_threads: 5
+        min_threads: 5
 
     swagger:
         username: 'username'

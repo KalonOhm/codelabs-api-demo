@@ -26,6 +26,7 @@ Rails.application.routes.draw do
         delete :logout
         get :me
         post :create
+        put :update 
       end
     end
   end
